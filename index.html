@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verkauf bestätigen – Gebrauchtwagen Sulingen</title>
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#10b981">
+  <style>
+    :root{
+      --brand:#10b981;      /* Akzentfarbe (grün) */
+      --bg:#ffffff;
+      --fg:#0b1220;
+      --muted:#6b7280;
+      --card:#ffffff;
+      --border:#e5e7eb;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{ --bg:#0b1220; --fg:#eef2ff; --card:#111827; --border:#1f2937; --muted:#9ca3af; }
+    }
+    html,body{height:100%}
+    body{margin:0; background:var(--bg); color:var(--fg); font:16px/1.55 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif;}
+    .wrap{max-width:760px; margin:0 auto; padding:24px;}
+    header{display:flex; align-items:center; gap:14px; margin:8px 0 18px}
+    .logo{display:flex; align-items:center; gap:10px; font-weight:800; font-size:20px}
+    .logo-badge{width:36px; height:36px; border-radius:10px; background:var(--brand); display:inline-flex; align-items:center; justify-content:center; color:#fff;}
+    .card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px; box-shadow:0 10px 30px rgba(0,0,0,.06)}
+    .btn{display:inline-block; padding:12px 16px; border-radius:10px; background:var(--brand); color:#fff; text-decoration:none; font-weight:700}
+    .muted{color:var(--muted); font-size:12px; margin-top:8px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; white-space:pre-wrap}
+    .grid{display:grid; grid-template-columns:1fr; gap:16px}
+    @media (min-width:720px){ .grid{ grid-template-columns: 1.5fr .9fr } }
+    .contact{font-size:13px; color:var(--muted)}
+    .contact strong{color:var(--fg)}
+    footer{margin-top:24px; font-size:12px; color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">
+        <div class="logo-badge">🚗</div>
+        <div>Gebrauchtwagen Sulingen</div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <h1 style="margin:0 0 8px">Verkauf bestätigen</h1>
+        <p style="margin-top:0">Ein Klick öffnet Ihr E‑Mail‑Programm zur Bestätigung.</p>
+        <p><a id="go" class="btn" href="#">E‑Mail jetzt öffnen</a></p>
+        <p class="muted">Falls der Button nicht funktioniert, bitte auf „Antworten“ klicken und den untenstehenden Text senden:</p>
+        <pre id="fallback" class="muted mono"></pre>
+      </div>
+
+      <aside class="card contact">
+        <div style="font-weight:700; margin-bottom:4px">Gebrauchtwagen Sulingen</div>
+        <div><strong>Adresse:</strong> Bassumer Str. 81a, 27232 Sulingen</div>
+        <div><strong>Telefon:</strong> 04271-9568989</div>
+        <div><strong>Mobil:</strong> 0173-7831405</div>
+        <div><strong>E-Mail:</strong> info@gebrauchtwagen-sulingen.de</div>
+        <div><strong>Web:</strong> www.gebrauchtwagen-sulingen.de</div>
+        <div style="margin-top:8px"><strong>USt.-IdNr.:</strong> DE367902568</div>
+      </aside>
+    </div>
+
+    <footer>© <span id="year"></span> Gebrauchtwagen Sulingen • Bestätigungsservice</footer>
+  </div>
+
+  <script>
+    // === Branding schnell ändern ===
+    // Wenn du später ein Logo-Bild benutzen willst, setze hier die URL:
+    const logoUrl = ""; // z.B. "https://www.deinedomain.de/logo.png"
+    if (logoUrl){
+      const badge = document.querySelector('.logo-badge');
+      badge.style.backgroundImage = `url(${logoUrl})`;
+      badge.style.backgroundSize = "cover";
+      badge.textContent = "";
+      badge.style.borderRadius = "8px";
+    }
+
+    // === Logik ===
+    function qp(k){ return new URL(location.href).searchParams.get(k) || ""; }
+    function enc(s){ return encodeURIComponent(s).replace(/%0A/g,"%0D%0A"); }
+
+    // Eingaben aus der URL
+    const code = qp("code");
+    const name = qp("name");
+    const mm   = qp("mm");
+    const price= qp("price");
+    const to   = qp("to") || "info@gebrauchtwagen-sulingen.de";
+
+    const subject = `Bestätigungscode: ${code}`;
+    // Schutz: Fallbacks, damit nie "den Verkauf des  zum Preis..." steht
+    const mmSafe = mm && mm.trim() ? mm : "Fahrzeug";
+    const priceSafe = price && price.trim() ? price : "—";
+
+    const body = `Hallo Gebrauchtwagen Sulingen,
+
+hiermit bestätige ich, ${name}, den Verkauf des ${mmSafe} zum Preis von ${priceSafe}.
+Außerdem bestätige ich, dass es sich um das in der Kaufbestätigung beschriebene Fahrzeug handelt.
+
+Bestätigungscode: ${code}`;
+
+    document.getElementById("go").href =
+      `mailto:${enc(to)}?subject=${enc(subject)}&body=${enc(body)}`;
+    document.getElementById("fallback").textContent = body;
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
